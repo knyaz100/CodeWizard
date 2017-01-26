@@ -152,19 +152,48 @@ public final class MyStrategy implements Strategy {
             }
         } else System.out.println("No more route");*/
 
+
+
+        List<LivingUnit> notenemy = new ArrayList<>();
+        notenemy.addAll(Arrays.asList(world.getBuildings()));
+        notenemy.addAll(Arrays.asList(world.getWizards()));
+        notenemy.addAll(Arrays.asList(world.getMinions()));
+
+        LivingUnit nearestTarget = null;
+        double nearestTargetDistance = 4000D;
+
+        for (LivingUnit target : notenemy) {
+            if (target.getFaction() == Faction.NEUTRAL || target.getFaction() == self.getFaction()) {
+
+
+                double distance = self.getDistanceTo(target);
+
+                if (distance < nearestTargetDistance) {
+                    nearestTarget = target;
+                    nearestTargetDistance = distance;
+                }
+            }
+        }
+
         Random random = new Random(game.getRandomSeed());
         double angle = self.getAngleTo(finish.getX(), finish.getY());
+
         double delta = random.nextDouble();
         double gamma = random.nextDouble();
         double alfa = random.nextDouble();
         move.setCastAngle(delta);
         move.setMinCastDistance( game.getMagicMissileRadius());
         move.setAction(ActionType.MAGIC_MISSILE);
+        if(nearestTargetDistance < 500) {
+            if (random.nextBoolean()) finish.x = finish.x += 2000 * alfa;
+            else finish.x -= 2000 * alfa;
+            if (random.nextBoolean()) finish.y = finish.y += 2000 * gamma;
+            else finish.y -= 2000 * gamma;
+        }
 
-        if(random.nextBoolean()) finish.x = finish.x += 4000*alfa;
-        else finish.x -= 4000*alfa;
-        if(random.nextBoolean()) finish.y = finish.y += 4000*gamma;
-        else finish.y -= 4000*gamma;
+
+
+
 
         goTo(finish);
     }
